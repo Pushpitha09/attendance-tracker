@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 
-function FacultyDashboard() {
+function FacultyDashboard({ students, setStudents }) {
   const [activePage, setActivePage] = useState('dashboard');
-  const [students, setStudents] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const navigate = useNavigate();
   const [newStudent, setNewStudent] = useState({
     rollNo: '',
     name: '',
@@ -80,7 +81,9 @@ function FacultyDashboard() {
         </nav>
 
         <div className="sidebar-footer">
-          <div className="nav-item logout">Logout</div>
+          <div className="nav-item logout" onClick={() => navigate('/')}>
+            Logout
+          </div>
         </div>
       </div>
 

@@ -243,3 +243,12 @@ body { font-family: Arial, sans-serif; overflow: hidden; }
   border: 1px solid rgba(255,255,255,0.25);
   backdrop-filter: blur(5px);
 }
+.error-msg {
+  background: #fce8e6;
+  color: #ea4335;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 15px;
+  border: 1px solid #ea4335;
+}

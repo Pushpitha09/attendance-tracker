@@ -2,16 +2,37 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import studentAnimation from '../student.json';
+import { loginUser } from '../api';
 import '../App.css';
 
 function Login() {
   const [role, setRole] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if(role === 'faculty') navigate('/faculty-dashboard');
-    else if(role === 'student') navigate('/student-dashboard');
-    else alert('Please select a role!');
+  const handleLogin = async () => {
+    if(!role) { setError('Please select a role!'); return; }
+    if(!email) { setError('Please enter email!'); return; }
+    if(!password) { setError('Please enter password!'); return; }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const res = await loginUser({ email, password, role });
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+
+      if(role === 'faculty') navigate('/faculty-dashboard');
+      else navigate('/student-dashboard');
+    } catch(err) {
+      setError('Invalid email or password!');
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -26,6 +47,8 @@ function Login() {
           <h2>Welcome Back!</h2>
           <p className="college-name">RGMCET - Dept. of CSE</p>
           <p className="subtitle">Sign in to continue</p>
+
+          {error && <p className="error-msg">{error}</p>}
 
           <div className="input-group">
             <label>Login As</label>
@@ -46,6 +69,8 @@ function Login() {
               type="email"
               placeholder="Enter your email"
               className="input-field"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
@@ -55,10 +80,17 @@ function Login() {
               type="password"
               placeholder="Enter your password"
               className="input-field"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
-          <button className="login-btn" onClick={handleLogin}>Login</button>
+          <button
+            className="login-btn"
+            onClick={handleLogin}
+            disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
           <p className="footer-text">Student Attendance Tracker 2026</p>
         </div>
 

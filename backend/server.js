@@ -11,11 +11,13 @@ const authRoutes = require('./routes/auth');
 const studentRoutes = require('./routes/students');
 const attendanceRoutes = require('./routes/attendance');
 const subjectRoutes = require('./routes/subjects');
+const emailRoutes = require('./routes/email');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/subjects', subjectRoutes);
+app.use('/api/email', emailRoutes);
 
 app.get('/', function(req, res) {
   res.send('Attendance Tracker API is running!');

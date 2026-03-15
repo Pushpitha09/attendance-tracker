@@ -15,3 +15,5 @@ export const getAttendance = (id) => API.get('/attendance/' + id);
 export const getSubjects = () => API.get('/subjects');
 export const addSubject = (data) => API.post('/subjects/add', data);
 export const deleteSubject = (id) => API.delete('/subjects/delete/' + id);
+export const sendWarningEmails = () => API.post('/email/send-warning');
+export const sendSummaryEmails = () => API.post('/email/send-summary');

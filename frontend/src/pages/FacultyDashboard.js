@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getStudents, addStudent, deleteStudent, getSubjects, addSubject, deleteSubject, markAttendance, updateStudent } from '../api';
+import { getStudents, addStudent, deleteStudent, getSubjects, addSubject, deleteSubject, markAttendance, updateStudent, sendWarningEmails, sendSummaryEmails } from '../api';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import './Dashboard.css';
@@ -236,6 +236,26 @@ function FacultyDashboard({ students, setStudents }) {
     });
 
     doc.save('Marks_Report.pdf');
+  };
+
+  const handleSendWarningEmails = async () => {
+    if(!window.confirm('Send warning emails to all students below 75%?')) return;
+    try {
+      const res = await sendWarningEmails();
+      alert(res.data.message);
+    } catch(err) {
+      alert('Error sending emails!');
+    }
+  };
+
+  const handleSendSummaryEmails = async () => {
+    if(!window.confirm('Send monthly summary emails to all students?')) return;
+    try {
+      const res = await sendSummaryEmails();
+      alert(res.data.message);
+    } catch(err) {
+      alert('Error sending emails!');
+    }
   };
 
   const getStatus = (attendance) => {
@@ -695,6 +715,30 @@ function FacultyDashboard({ students, setStudents }) {
                 <p>Internal Marks for All Students</p>
                 <button className="download-btn" onClick={downloadMarksReport}>
                   Download PDF
+                </button>
+              </div>
+            </div>
+
+            <h3 style={{marginTop: '30px'}}>Email Notifications</h3>
+            <div className="report-cards">
+              <div className="report-card">
+                <h4>Low Attendance Warning</h4>
+                <p>Send warning to {students.filter(s => s.attendance_percentage < 75).length} students below 75%</p>
+                <button
+                  className="download-btn"
+                  style={{background: '#ea4335'}}
+                  onClick={handleSendWarningEmails}>
+                  Send Warning Emails
+                </button>
+              </div>
+              <div className="report-card">
+                <h4>Monthly Summary</h4>
+                <p>Send summary to all {students.length} students</p>
+                <button
+                  className="download-btn"
+                  style={{background: '#34a853'}}
+                  onClick={handleSendSummaryEmails}>
+                  Send Summary Emails
                 </button>
               </div>
             </div>

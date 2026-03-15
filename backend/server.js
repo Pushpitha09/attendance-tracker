@@ -1,8 +1,6 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
-
-dotenv.config();
 
 const app = express();
 
@@ -12,12 +10,14 @@ app.use(express.json());
 const authRoutes = require('./routes/auth');
 const studentRoutes = require('./routes/students');
 const attendanceRoutes = require('./routes/attendance');
+const subjectRoutes = require('./routes/subjects');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/attendance', attendanceRoutes);
+app.use('/api/subjects', subjectRoutes);
 
-app.get('/', (req, res) => {
+app.get('/', function(req, res) {
   res.send('Attendance Tracker API is running!');
 });
 

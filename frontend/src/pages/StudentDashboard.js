@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getStudents } from '../api';
 import './Dashboard.css';
 
-function StudentDashboard({ students }) {
+function StudentDashboard() {
   const [activePage, setActivePage] = useState('dashboard');
+  const [student, setStudent] = useState(null);
   const navigate = useNavigate();
 
-  const student = students.length > 0 ? students[0] : {
-    name: 'No Student Found',
-    rollNo: '-',
-    email: '-',
-    attendance: 0,
-    mid1: 0,
-    mid2: 0,
-    assignment: 0
+  useEffect(() => {
+    fetchStudentData();
+  }, []);
+
+  const fetchStudentData = async () => {
+    try {
+      const loggedInUser = JSON.parse(localStorage.getItem('user'));
+      const res = await getStudents();
+      const found = res.data.find(s => s.email === loggedInUser.email);
+      if(found) setStudent(found);
+    } catch(err) {
+      console.log('Error fetching student:', err);
+    }
   };
 
   const getStatus = (attendance) => {
@@ -27,6 +34,25 @@ function StudentDashboard({ students }) {
     if(attendance >= 60) return 'Warning';
     return 'Not Eligible';
   };
+
+  if(!student) {
+    return (
+      <div className="dashboard-container">
+        <div className="sidebar">
+          <div className="sidebar-header">
+            <div className="sidebar-logo">RGMCET</div>
+            <p>Student Portal</p>
+          </div>
+          <div className="sidebar-footer">
+            <div className="nav-item logout" onClick={() => navigate('/')}>Logout</div>
+          </div>
+        </div>
+        <div className="main-content">
+          <p className="no-data">Your profile is not set up yet. Please contact your faculty!</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-container">
@@ -72,9 +98,9 @@ function StudentDashboard({ students }) {
         <div className="header">
           <div>
             <h2>Welcome, {student.name}!</h2>
-            <p>Wednesday, March 11, 2026</p>
+            <p>Friday, March 14, 2026</p>
           </div>
-          <div className="header-profile">{student.rollNo}</div>
+          <div className="header-profile">{student.roll_no}</div>
         </div>
 
         {activePage === 'dashboard' && (
@@ -82,7 +108,7 @@ function StudentDashboard({ students }) {
             <div className="stats-grid">
               <div className="stat-card blue">
                 <div className="stat-info">
-                  <h3>{student.attendance}%</h3>
+                  <h3>{student.attendance_percentage}%</h3>
                   <p>My Attendance</p>
                 </div>
               </div>
@@ -101,8 +127,8 @@ function StudentDashboard({ students }) {
               <div className="stat-card red">
                 <div className="stat-info">
                   <h3>
-                    <span className={`status ${getStatus(student.attendance)}`}>
-                      {getStatusText(student.attendance)}
+                    <span className={`status ${getStatus(student.attendance_percentage)}`}>
+                      {getStatusText(student.attendance_percentage)}
                     </span>
                   </h3>
                   <p>Eligibility</p>
@@ -119,7 +145,7 @@ function StudentDashboard({ students }) {
                 </div>
                 <div className="profile-row">
                   <span className="profile-label">Roll No</span>
-                  <span className="profile-value">{student.rollNo}</span>
+                  <span className="profile-value">{student.roll_no}</span>
                 </div>
                 <div className="profile-row">
                   <span className="profile-label">Email</span>
@@ -143,7 +169,7 @@ function StudentDashboard({ students }) {
             <h3>My Attendance</h3>
             <div className="attendance-summary">
               <div className="att-card">
-                <h4>{student.attendance}%</h4>
+                <h4>{student.attendance_percentage}%</h4>
                 <p>Overall Attendance</p>
               </div>
               <div className="att-card">
@@ -151,11 +177,11 @@ function StudentDashboard({ students }) {
                 <p>Classes Held</p>
               </div>
               <div className="att-card">
-                <h4>{Math.round(48 * student.attendance / 100)}</h4>
+                <h4>{Math.round(48 * student.attendance_percentage / 100)}</h4>
                 <p>Classes Attended</p>
               </div>
               <div className="att-card">
-                <h4>{48 - Math.round(48 * student.attendance / 100)}</h4>
+                <h4>{48 - Math.round(48 * student.attendance_percentage / 100)}</h4>
                 <p>Classes Missed</p>
               </div>
             </div>
@@ -178,7 +204,7 @@ function StudentDashboard({ students }) {
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Data Structures</td>
+                    <td>Overall</td>
                     <td>{student.mid1}</td>
                     <td>{student.mid2}</td>
                     <td>{student.assignment}</td>
@@ -195,10 +221,10 @@ function StudentDashboard({ students }) {
             <h3>Eligibility Status</h3>
             <div className="eligibility-card">
               <div className="elig-status">
-                <div className={`elig-badge ${getStatus(student.attendance)}`}>
-                  {getStatusText(student.attendance)}
+                <div className={`elig-badge ${getStatus(student.attendance_percentage)}`}>
+                  {getStatusText(student.attendance_percentage)}
                 </div>
-                <p>Based on your attendance of {student.attendance}%</p>
+                <p>Based on your attendance of {student.attendance_percentage}%</p>
               </div>
 
               <div className="elig-details">
@@ -208,12 +234,12 @@ function StudentDashboard({ students }) {
                 </div>
                 <div className="elig-row">
                   <span>Your Attendance</span>
-                  <span className="elig-value">{student.attendance}%</span>
+                  <span className="elig-value">{student.attendance_percentage}%</span>
                 </div>
                 <div className="elig-row">
                   <span>Shortage</span>
                   <span className="elig-value">
-                    {student.attendance >= 75 ? 'None' : (75 - student.attendance) + '%'}
+                    {student.attendance_percentage >= 75 ? 'None' : (75 - student.attendance_percentage) + '%'}
                   </span>
                 </div>
               </div>
@@ -221,12 +247,12 @@ function StudentDashboard({ students }) {
               <div className="progress-bar-container">
                 <div className="progress-label">
                   <span>Attendance Progress</span>
-                  <span>{student.attendance}%</span>
+                  <span>{student.attendance_percentage}%</span>
                 </div>
                 <div className="progress-bar">
                   <div
-                    className={`progress-fill ${getStatus(student.attendance)}`}
-                    style={{width: student.attendance + '%'}}>
+                    className={`progress-fill ${getStatus(student.attendance_percentage)}`}
+                    style={{width: student.attendance_percentage + '%'}}>
                   </div>
                 </div>
                 <div className="progress-marker">

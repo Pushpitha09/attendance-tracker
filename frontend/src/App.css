@@ -252,3 +252,28 @@ body { font-family: Arial, sans-serif; overflow: hidden; }
   margin-bottom: 15px;
   border: 1px solid #ea4335;
 }
+.success-msg {
+  background: #e6f4ea;
+  color: #34a853;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 15px;
+  border: 1px solid #34a853;
+}
+
+.toggle-text {
+  color: #999;
+  font-size: 13px;
+  margin-top: 15px;
+}
+
+.toggle-link {
+  color: #1a73e8;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.toggle-link:hover {
+  text-decoration: underline;
+}
